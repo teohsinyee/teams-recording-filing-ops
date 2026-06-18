@@ -1,0 +1,36 @@
+name: Open PR via App
+
+on:
+  workflow_dispatch:
+    inputs:
+      branch:
+        description: Source branch
+        required: true
+        type: string
+      title:
+        description: Pull request title
+        required: true
+        type: string
+      reviewer:
+        description: Reviewer username
+        required: false
+        default: teohsinyee
+        type: string
+
+permissions:
+  contents: read
+
+jobs:
+  create-pr:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Open pull request
+        uses: teohsinyee/ai-pr-opener-bot@v1
+        with:
+          app_id: ${{ secrets.PR_APP_ID }}
+          private_key: ${{ secrets.PR_APP_PRIVATE_KEY }}
+          branch: ${{ inputs.branch }}
+          base: main
+          title: ${{ inputs.title }}
+          draft: true
+          reviewer: ${{ inputs.reviewer }}
