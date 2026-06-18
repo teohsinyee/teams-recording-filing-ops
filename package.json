@@ -1,0 +1,11 @@
+{
+  "name": "recording-review-ops",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "download:missing-vtt": "node work/recording-approval-ui/download-missing-vtt.mjs"
+  },
+  "dependencies": {
+    "playwright": "^1.54.2"
+  }
+}
