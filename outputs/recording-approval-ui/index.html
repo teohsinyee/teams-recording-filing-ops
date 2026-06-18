@@ -1,0 +1,101 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Recording Approval Table</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <main class="app">
+    <header class="hero">
+      <div>
+        <p class="eyebrow">Recording Approval</p>
+        <h1>Review and save copy decisions</h1>
+        <p class="intro">Weekly review list for recordings not copied yet. Target folders are auto-filled, and changes auto-save after you connect once.</p>
+      </div>
+      <div class="hero-actions">
+        <button id="connectBtn" type="button" class="accent">Connect File</button>
+      </div>
+    </header>
+
+    <section class="panel">
+      <div class="stats" id="stats"></div>
+      <div class="toolbar">
+        <label>
+          Search
+          <input id="searchInput" type="search" placeholder="Filter by filename">
+        </label>
+        <label>
+          Folder
+          <select id="destinationFilter">
+            <option value="">All folders</option>
+          </select>
+        </label>
+        <label>
+          Sort
+          <select id="sortBy">
+            <option value="destination">Target folder</option>
+            <option value="name">Name</option>
+            <option value="duration">Duration</option>
+          </select>
+        </label>
+        <label>
+          Status
+          <select id="statusFilter">
+            <option value="">All statuses</option>
+            <option value="approved">Approved</option>
+            <option value="pending">Pending</option>
+            <option value="skip">Skip</option>
+          </select>
+        </label>
+        <label>
+          Scope
+          <select id="copyScope">
+            <option value="pending-mp4">MP4 not copied yet</option>
+            <option value="all">All recordings</option>
+            <option value="copied-mp4">Already copied MP4</option>
+          </select>
+        </label>
+        <label>
+          VTT
+          <select id="vttFilter">
+            <option value="">All</option>
+            <option value="missing">No VTT</option>
+            <option value="found">VTT in target</option>
+          </select>
+        </label>
+        <label class="checkbox">
+          <input id="shortOnly" type="checkbox">
+          Short clips only
+        </label>
+      </div>
+      <p class="note-help">Recommended file: <code>C:\Users\sinyee\Documents\Codex\2026-06-18\c-users-sinyee-onedrive-avnet-recordings\outputs\recording-approval-ui\data\approvals.json</code></p>
+      <p id="saveStatus" class="save-status">Not connected yet. Click Connect File once, then changes will auto-save.</p>
+    </section>
+
+    <section class="table-shell">
+      <table class="recording-table">
+        <thead>
+          <tr>
+            <th>Review</th>
+            <th>Duration</th>
+            <th>Name</th>
+            <th>Open</th>
+            <th>MP4</th>
+            <th>VTT</th>
+            <th>Target Folder</th>
+            <th>New Filename</th>
+            <th>Notes</th>
+            <th>Approve</th>
+            <th>Skip</th>
+          </tr>
+        </thead>
+        <tbody id="recordingTableBody"></tbody>
+      </table>
+    </section>
+  </main>
+  <script src="data/recordings.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
