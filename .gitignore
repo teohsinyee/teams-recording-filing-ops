@@ -1,0 +1,4 @@
+outputs/recording-approval-ui/data/recordings.json
+outputs/recording-approval-ui/data/recordings.js
+outputs/recording-approval-ui/data/approvals.json
+*.log
