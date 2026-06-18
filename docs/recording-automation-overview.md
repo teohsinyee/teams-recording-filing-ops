@@ -38,6 +38,13 @@ flowchart TD
 
 ## Main parts
 
+Purpose:
+show the system components and handoff boundaries at a glance.
+
+How to read:
+read left to right.
+Storage and inputs are on the left, local scripts and UI are in the middle, browser automation is on the right, and final outputs land in target folders.
+
 ```mermaid
 flowchart LR
     Source["📁 OneDrive Recordings"] --> Generator["generate-recordings-json.ps1"]
@@ -62,6 +69,13 @@ flowchart LR
 
 ## VTT download path
 
+Purpose:
+show exactly how the missing-VTT automation works once the batch downloader starts.
+
+How to read:
+read top to bottom.
+This is the detailed runtime path for one recording: launch browser, open Stream, sign in if needed, open transcript, download `.vtt`, then save to the target folder.
+
 ```mermaid
 sequenceDiagram
     participant Script as "download-missing-vtt.ps1"
@@ -85,6 +99,13 @@ sequenceDiagram
 ```
 
 ## Current logic flow
+
+Purpose:
+show the decision logic behind the current workflow, including what is inferred automatically and what still needs human approval.
+
+How to read:
+start at the top and follow the arrows.
+Diamonds are decisions. Green boxes are actions. This is the best diagram to read when you want to understand "why did this row show up like this in the UI?"
 
 ```mermaid
 flowchart TD
@@ -122,6 +143,9 @@ flowchart TD
 
 ## Current matching rules
 
+Purpose:
+document the exact heuristics behind the automation, so future changes are made intentionally instead of by guesswork.
+
 - MP4 already copied:
   scan target folders for `.mp4`, then match by `date token + duration`.
 - VTT already copied:
@@ -134,6 +158,13 @@ flowchart TD
   if copied MP4 path is known, save `.vtt` beside that MP4; otherwise fall back to approved/suggested target folder.
 
 ## Human approval boundary
+
+Purpose:
+show where automation stops and where the user still makes the call.
+
+How to read:
+read top to bottom by actor.
+This is the ownership view: weekly automation prepares, the user reviews and approves, then automation resumes for copy and transcript fetch.
 
 ```mermaid
 sequenceDiagram
