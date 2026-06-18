@@ -44,15 +44,94 @@ flowchart LR
     Generator --> UI["recording approval UI"]
     UI --> Approvals["approvals.json"]
     Approvals --> Copier["copy-approved-recordings.ps1"]
-    Approvals --> VttBot["download-missing-vtt.ps1 / .mjs"]
+    Approvals --> VttBot["download-missing-vtt.ps1"]
+    VttBot --> Playwright["🎭 Playwright runner"]
+    Playwright --> Edge["🌐 Edge persistent profile"]
+    Edge --> Stream["📺 Stream web UI"]
     Copier --> Targets["🗂️ Target folders"]
-    VttBot --> Targets
+    Stream --> VttSave["💾 saveAs .vtt"]
+    VttSave --> Targets
 
     classDef primary fill:#87CEEB,stroke:#333,stroke-width:2px,color:darkblue
     classDef storage fill:#E6E6FA,stroke:#333,stroke-width:2px,color:darkblue
+    classDef web fill:#FFD700,stroke:#333,stroke-width:2px,color:black
     class Source,Targets,Approvals storage
-    class Generator,UI,Copier,VttBot primary
+    class Generator,UI,Copier,VttBot,Playwright,VttSave primary
+    class Edge,Stream web
 ```
+
+## VTT download path
+
+```mermaid
+sequenceDiagram
+    participant Script as "download-missing-vtt.ps1"
+    participant Node as "Node + Playwright"
+    participant Edge as "Edge profile"
+    participant Stream as "Stream page"
+    participant Folder as "Target folder"
+
+    Script->>Node: start batch for No VTT recordings
+    Node->>Edge: launch persistent browser
+    Edge->>Stream: open sourceUrl
+    alt first run not signed in
+        Stream-->>Edge: show Sign in
+        Edge-->>User: sign in once
+        User-->>Edge: complete login
+    end
+    Node->>Stream: open Transcript panel
+    Node->>Stream: click Download as .vtt
+    Stream-->>Node: browser download event
+    Node->>Folder: saveAs targetPath.vtt
+```
+
+## Current logic flow
+
+```mermaid
+flowchart TD
+    A["📁 Scan source Recordings folder"] --> B["🎞️ Read MP4 metadata<br/>name + date + duration"]
+    B --> C["🗂️ Build suggested target folder"]
+    C --> D["🔎 Check every target folder"]
+    D --> E{"Matching MP4 already in target?"}
+    E -->|Yes| F["Mark MP4 = Already in target"]
+    E -->|No| G["Mark MP4 = Not in target"]
+    D --> H{"Matching VTT already in target?"}
+    H -->|Yes| I["Mark VTT = VTT in target"]
+    H -->|No| J["Mark VTT = No VTT"]
+    F --> K["🧾 Generate review row"]
+    G --> K
+    I --> K
+    J --> K
+    K --> L["👤 User reviews folder / approve / skip"]
+    L --> M{"Approved to copy?"}
+    M -->|No| N["Leave MP4 as-is"]
+    M -->|Yes| O["📦 Copy MP4 as yymmdd_filename"]
+    O --> P["☁️ Free up OneDrive space"]
+    P --> Q{"VTT missing?"}
+    Q -->|No| R["✅ Row complete"]
+    Q -->|Yes| S["🌐 Open Stream link"]
+    S --> T["📄 Open Transcript"]
+    T --> U["⬇️ Download as .vtt"]
+    U --> V["💾 Save VTT into same target folder"]
+    V --> R
+
+    classDef step fill:#90EE90,stroke:#333,stroke-width:2px,color:darkgreen
+    classDef decision fill:#FFD700,stroke:#333,stroke-width:2px,color:black
+    class A,B,C,D,F,G,I,J,K,L,N,O,P,R,S,T,U,V step
+    class E,H,M,Q decision
+```
+
+## Current matching rules
+
+- MP4 already copied:
+  scan target folders for `.mp4`, then match by `date token + duration`.
+- VTT already copied:
+  first try exact expected names, then try `date token + normalized title`.
+- Target folder suggestion:
+  infer from recording name keywords like `Git`, `SQL`, `GenAI`, `Gina & Sinyee`, `Thomas`, `MI Finance`.
+- Copy naming:
+  always use `yymmdd_` prefix for copied MP4.
+- VTT download target:
+  if copied MP4 path is known, save `.vtt` beside that MP4; otherwise fall back to approved/suggested target folder.
 
 ## Human approval boundary
 
@@ -69,7 +148,7 @@ sequenceDiagram
     U->>C: Approve copy
     C->>C: Copy MP4 + free up space
     C->>S: Check missing VTT
-    S->>S: Open Stream links + download .vtt
+    S->>S: Playwright opens Stream + downloads .vtt
     S->>UI: Next refresh shows updated VTT status
 ```
 
