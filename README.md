@@ -1,4 +1,4 @@
-# recording-review-ops
+# teams-recording-filing-ops
 
 If your Microsoft Teams recordings keep piling up in OneDrive, and every week you have to:
 
@@ -179,17 +179,25 @@ That command will:
 - download missing VTT files into the matching target folder
 - refresh review data so the UI shows the latest state
 
-## Main files
+## File map
 
-- `outputs/recording-approval-ui/index.html`
-- `outputs/recording-approval-ui/app.js`
-- `outputs/recording-approval-ui/styles.css`
-- `work/recording-approval-ui/generate-recordings-json.ps1`
-- `work/recording-approval-ui/copy-approved-recordings.ps1`
-- `work/recording-approval-ui/download-missing-vtt.ps1`
-- `work/recording-approval-ui/run-approved-flow.ps1`
-- `docs/weekly-runbook.md`
-- `docs/recording-automation-overview.md`
+| File | What it does | Python-style analogy |
+|---|---|---|
+| [`config.example.json`](./config.example.json) | Example config template for private local paths, target folders, and routing rules. | Like `.env.example` or a sample `config.yaml` |
+| `config.local.json` | Real private local config used during actual runs. | Like a real local config file that is not committed |
+| [`package.json`](./package.json) | Project metadata, Node dependency list, and runnable scripts. | Like `pyproject.toml` |
+| [`package-lock.json`](./package-lock.json) | Exact locked dependency versions for reproducible installs. | Like `poetry.lock` or `uv.lock` |
+| [`outputs/recording-approval-ui/index.html`](./outputs/recording-approval-ui/index.html) | The browser page structure for the review table UI. | Like an HTML template |
+| [`outputs/recording-approval-ui/app.js`](./outputs/recording-approval-ui/app.js) | Browser-side UI behavior: table rendering, filters, dropdowns, save, and drag-fill. | Like front-end controller code, not Python |
+| [`outputs/recording-approval-ui/styles.css`](./outputs/recording-approval-ui/styles.css) | Visual styling for the local UI. | No direct Python equivalent; UI-only styling |
+| [`work/recording-approval-ui/config-loader.ps1`](./work/recording-approval-ui/config-loader.ps1) | Shared config loader used by the PowerShell scripts. | Like `config.py` |
+| [`work/recording-approval-ui/generate-recordings-json.ps1`](./work/recording-approval-ui/generate-recordings-json.ps1) | Builds the weekly review dataset by scanning recordings, targets, and existing filed files. | Like `build_recordings_json.py` |
+| [`work/recording-approval-ui/copy-approved-recordings.ps1`](./work/recording-approval-ui/copy-approved-recordings.ps1) | Copies approved MP4 files into the chosen target folders safely. | Like `copy_approved_recordings.py` |
+| [`work/recording-approval-ui/download-missing-vtt.ps1`](./work/recording-approval-ui/download-missing-vtt.ps1) | PowerShell entrypoint for the missing-VTT download flow. | Like a thin runner script |
+| [`work/recording-approval-ui/download-missing-vtt.mjs`](./work/recording-approval-ui/download-missing-vtt.mjs) | Playwright browser automation that opens Stream and downloads missing `.vtt` files. | Like `playwright_script.py` or `selenium_script.py` |
+| [`work/recording-approval-ui/run-approved-flow.ps1`](./work/recording-approval-ui/run-approved-flow.ps1) | One-command post-approval pipeline: copy MP4, fetch VTT, refresh data. | Like `main.py` or `run_pipeline.py` |
+| [`docs/weekly-runbook.md`](./docs/weekly-runbook.md) | Operator guide for the weekly flow. | Like an operations runbook |
+| [`docs/recording-automation-overview.md`](./docs/recording-automation-overview.md) | Higher-level architecture and workflow explanation. | Like a design note |
 
 ## Notes
 
