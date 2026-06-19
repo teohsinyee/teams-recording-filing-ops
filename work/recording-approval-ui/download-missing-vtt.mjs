@@ -19,10 +19,10 @@ const profileDir =
   path.resolve("work/recording-approval-ui/playwright-profile");
 const limit = Number(args.limit ?? "0");
 
-const recordingsData = JSON.parse(fs.readFileSync(recordingsPath, "utf8"));
+const recordingsData = JSON.parse(readJsonFile(recordingsPath));
 const approvalsData =
   approvalsPath && fs.existsSync(approvalsPath)
-    ? JSON.parse(fs.readFileSync(approvalsPath, "utf8"))
+    ? JSON.parse(readJsonFile(approvalsPath))
     : null;
 
 const approvalMap = new Map(
@@ -211,4 +211,8 @@ function resultRow(name, status, targetPath, error = "") {
 function dateStamp() {
   const now = new Date();
   return `${now.getFullYear()}${String(now.getMonth() + 1).padStart(2, "0")}${String(now.getDate()).padStart(2, "0")}-${String(now.getHours()).padStart(2, "0")}${String(now.getMinutes()).padStart(2, "0")}${String(now.getSeconds()).padStart(2, "0")}`;
+}
+
+function readJsonFile(filePath) {
+  return fs.readFileSync(filePath, "utf8").replace(/^\uFEFF/, "");
 }
