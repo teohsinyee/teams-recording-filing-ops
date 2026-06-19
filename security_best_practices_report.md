@@ -12,9 +12,9 @@ The highest-risk theme is that the automation trusts locally generated JSON too 
 
 - Severity: High
 - Location:
-  - [work/recording-approval-ui/download-missing-vtt.mjs](C:/Users/sinyee/Documents/Codex/2026-06-18/c-users-sinyee-onedrive-avnet-recordings/work/recording-approval-ui/download-missing-vtt.mjs:57)
-  - [work/recording-approval-ui/download-missing-vtt.mjs](C:/Users/sinyee/Documents/Codex/2026-06-18/c-users-sinyee-onedrive-avnet-recordings/work/recording-approval-ui/download-missing-vtt.mjs:85)
-  - [work/recording-approval-ui/download-missing-vtt.mjs](C:/Users/sinyee/Documents/Codex/2026-06-18/c-users-sinyee-onedrive-avnet-recordings/work/recording-approval-ui/download-missing-vtt.mjs:112)
+  - `work/recording-approval-ui/download-missing-vtt.mjs:57`
+  - `work/recording-approval-ui/download-missing-vtt.mjs:85`
+  - `work/recording-approval-ui/download-missing-vtt.mjs:112`
 - Evidence:
   - `const targetVttPath = resolveTargetVttPath(item);`
   - `await download.saveAs(targetVttPath);`
@@ -33,9 +33,9 @@ The highest-risk theme is that the automation trusts locally generated JSON too 
 
 - Severity: Medium
 - Location:
-  - [work/recording-approval-ui/copy-approved-recordings.ps1](C:/Users/sinyee/Documents/Codex/2026-06-18/c-users-sinyee-onedrive-avnet-recordings/work/recording-approval-ui/copy-approved-recordings.ps1:128)
-  - [work/recording-approval-ui/copy-approved-recordings.ps1](C:/Users/sinyee/Documents/Codex/2026-06-18/c-users-sinyee-onedrive-avnet-recordings/work/recording-approval-ui/copy-approved-recordings.ps1:154)
-  - [work/recording-approval-ui/copy-approved-recordings.ps1](C:/Users/sinyee/Documents/Codex/2026-06-18/c-users-sinyee-onedrive-avnet-recordings/work/recording-approval-ui/copy-approved-recordings.ps1:159)
+  - `work/recording-approval-ui/copy-approved-recordings.ps1:128`
+  - `work/recording-approval-ui/copy-approved-recordings.ps1:154`
+  - `work/recording-approval-ui/copy-approved-recordings.ps1:159`
 - Evidence:
   - `$destDir = $destMap[$item.destinationId]`
   - `$target = Join-Path -Path $destDir -ChildPath $item.suggestedNewName`
@@ -53,9 +53,9 @@ The highest-risk theme is that the automation trusts locally generated JSON too 
 
 - Severity: Medium
 - Location:
-  - [outputs/recording-approval-ui/app.js](C:/Users/sinyee/Documents/Codex/2026-06-18/c-users-sinyee-onedrive-avnet-recordings/outputs/recording-approval-ui/app.js:369)
-  - [outputs/recording-approval-ui/app.js](C:/Users/sinyee/Documents/Codex/2026-06-18/c-users-sinyee-onedrive-avnet-recordings/outputs/recording-approval-ui/app.js:371)
-  - [outputs/recording-approval-ui/app.js](C:/Users/sinyee/Documents/Codex/2026-06-18/c-users-sinyee-onedrive-avnet-recordings/outputs/recording-approval-ui/app.js:377)
+  - `outputs/recording-approval-ui/app.js:369`
+  - `outputs/recording-approval-ui/app.js:371`
+  - `outputs/recording-approval-ui/app.js:377`
 - Evidence:
   - `sourceDir: state.data.sourceDir,`
   - `destinations: state.data.destinations,`
@@ -78,8 +78,8 @@ The highest-risk theme is that the automation trusts locally generated JSON too 
 
 - Severity: Low
 - Location:
-  - [outputs/recording-approval-ui/index.html](C:/Users/sinyee/Documents/Codex/2026-06-18/c-users-sinyee-onedrive-avnet-recordings/outputs/recording-approval-ui/index.html:3)
-  - [outputs/recording-approval-ui/index.html](C:/Users/sinyee/Documents/Codex/2026-06-18/c-users-sinyee-onedrive-avnet-recordings/outputs/recording-approval-ui/index.html:98)
+  - `outputs/recording-approval-ui/index.html:3`
+  - `outputs/recording-approval-ui/index.html:98`
 - Evidence:
   - No CSP meta tag is present.
   - The page executes `data/recordings.js` directly as a script.
