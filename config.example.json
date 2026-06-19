@@ -15,6 +15,7 @@
     {
       "id": "team-a",
       "label": "Team A",
+      "uiLabel": "Team A",
       "path": "C:\\Users\\you\\OneDrive - Company\\Team A\\Recording and Transcript"
     }
   ]

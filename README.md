@@ -203,6 +203,7 @@ That command will:
 
 - Source recordings live outside this repo in OneDrive.
 - Copy `config.example.json` to `config.local.json` and fill in your private local paths.
+- Use `uiLabel` in `config.local.json` when you want the UI to show a shorter folder name than the real folder owner/path name.
 - Put title-to-folder routing rules in `config.local.json` under `routingRules`.
 - Generated `recordings.json` and `recordings.js` are local working data and should not be committed.
 - Saved approval files may contain private file metadata and should not be committed by default.

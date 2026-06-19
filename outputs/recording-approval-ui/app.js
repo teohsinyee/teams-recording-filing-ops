@@ -33,6 +33,13 @@ const shortOnly = document.getElementById("shortOnly");
 const connectBtn = document.getElementById("connectBtn");
 const saveStatus = document.getElementById("saveStatus");
 
+const SAVE_MESSAGES = {
+  setupNeeded: "Auto-save is not set up yet. Click Set Up Auto-Save once, then your changes will save automatically.",
+  permissionDenied: "Auto-save permission was not granted. Your changes still stay in the page for now.",
+  saveFailed: "Auto-save failed. Set up auto-save again if needed.",
+  cancelled: "Auto-save setup was cancelled. Nothing was lost in the page.",
+};
+
 async function init() {
   state.data = window.RECORDINGS_PAYLOAD;
   if (!state.data) throw new Error("Missing recordings payload");
@@ -68,7 +75,7 @@ function populateDestinationFilter() {
   for (const destination of state.data.destinations) {
     const option = document.createElement("option");
     option.value = destination.id;
-    option.textContent = destination.label;
+    option.textContent = destinationDisplayLabel(destination);
     destinationFilter.append(option);
   }
 }
@@ -221,7 +228,7 @@ function renderTable() {
     const destinationOptions = state.data.destinations
       .map((destination) => {
         const selected = decision.destinationId === destination.id ? "selected" : "";
-        return `<option value="${destination.id}" ${selected}>${escapeHtml(destination.label)}</option>`;
+        return `<option value="${destination.id}" ${selected}>${escapeHtml(destinationDisplayLabel(destination))}</option>`;
       })
       .join("");
 
@@ -313,7 +320,7 @@ async function saveApprovals() {
 
   try {
     if (!state.saveHandle) {
-      updateSaveStatus("Not connected yet. Click Connect File once, then changes will auto-save.", "warn");
+      updateSaveStatus(SAVE_MESSAGES.setupNeeded, "warn");
       return false;
     }
 
@@ -321,7 +328,7 @@ async function saveApprovals() {
     if (permission !== "granted") {
       const requested = await state.saveHandle.requestPermission({ mode: "readwrite" });
       if (requested !== "granted") {
-        updateSaveStatus("File permission was not granted. Changes still stay in the page.", "warn");
+        updateSaveStatus(SAVE_MESSAGES.permissionDenied, "warn");
         return false;
       }
     }
@@ -333,17 +340,18 @@ async function saveApprovals() {
     return true;
   } catch (error) {
     console.warn("Save failed", error);
-    updateSaveStatus("Auto-save failed. Reconnect the file if needed.", "warn");
+    updateSaveStatus(SAVE_MESSAGES.saveFailed, "warn");
     return false;
   }
 }
 
 async function connectApprovalFile() {
+  const previousHandle = state.saveHandle;
   try {
     if (!window.showSaveFilePicker) {
       const serialized = JSON.stringify(buildApprovalPayload(), null, 2);
       downloadFallback(serialized);
-      updateSaveStatus(`Browser file access is unavailable here. A JSON file was downloaded instead. Move it to ${DEFAULT_SAVE_HINT} if you want me to read it directly later.`, "warn");
+      updateSaveStatus(`This browser cannot save directly here, so a JSON file was downloaded instead. Move it to ${DEFAULT_SAVE_HINT} if you want me to read it later.`, "warn");
       return;
     }
 
@@ -357,11 +365,16 @@ async function connectApprovalFile() {
       ],
     });
     await saveHandleToDb(state.saveHandle);
-    updateSaveStatus(`Connected to ${state.saveHandle.name}. Changes will auto-save.`);
+    updateSaveStatus(`Auto-save is on. Changes will be saved to ${state.saveHandle.name}.`);
     await saveApprovals();
   } catch (error) {
     console.warn("Connect cancelled or failed", error);
-    updateSaveStatus("Connect was cancelled. Nothing was lost in the page.", "warn");
+    state.saveHandle = previousHandle;
+    if (state.saveHandle) {
+      updateSaveStatus(`Auto-save is on. Changes will be saved to ${state.saveHandle.name}.`);
+      return;
+    }
+    updateSaveStatus(SAVE_MESSAGES.cancelled, "warn");
   }
 }
 
@@ -517,7 +530,11 @@ function compareRecordings(left, right) {
 
 function destinationLabel(destinationId) {
   const destination = state.data.destinations.find((item) => item.id === destinationId);
-  return destination ? destination.label : "zzz";
+  return destination ? destinationDisplayLabel(destination) : "zzz";
+}
+
+function destinationDisplayLabel(destination) {
+  return destination.uiLabel || destination.label;
 }
 
 function cssEscape(value) {
@@ -531,6 +548,7 @@ function updateSaveStatus(message = "", mode = "ok") {
   saveStatus.textContent = message || "Ready.";
   saveStatus.classList.remove("ok", "warn");
   saveStatus.classList.add(mode);
+  connectBtn.textContent = state.saveHandle ? "Auto-Save Is On" : "Set Up Auto-Save";
 }
 
 async function loadSavedHandle() {
