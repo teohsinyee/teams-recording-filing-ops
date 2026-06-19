@@ -368,19 +368,17 @@ async function connectApprovalFile() {
 function buildApprovalPayload() {
   return {
     savedAt: new Date().toISOString(),
-    sourceDir: state.data.sourceDir,
-    destinations: state.data.destinations,
     approvals: state.data.recordings.map((recording) => {
       const decision = getDecision(recording);
       return {
         name: recording.name,
-        sourcePath: recording.sourcePath,
         durationText: recording.durationText,
         durationSeconds: recording.durationSeconds,
         suspectShort: recording.suspectShort,
         alreadyCopied: Boolean(recording.alreadyCopied),
         suggestedDestinationId: recording.suggestedDestinationId,
         datePrefix: recording.datePrefix,
+        dateToken: recording.dateToken,
         suggestedNewName: recording.suggestedNewName,
         destinationId: decision.destinationId || "",
         approved: Boolean(decision.approved),

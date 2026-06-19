@@ -31,6 +31,7 @@ const approvalMap = new Map(
 const destinationMap = new Map(
   (recordingsData.destinations ?? []).map((item) => [item.id, item.path]),
 );
+const allowedDestinationRoots = new Set(destinationMap.values().map((item) => path.resolve(item)));
 
 const candidates = recordingsData.recordings
   .filter((item) => !item.vttFound && item.sourceUrl)
@@ -55,6 +56,10 @@ const results = [];
 
 for (const item of queue) {
   const targetVttPath = resolveTargetVttPath(item);
+  if (!targetVttPath) {
+    results.push(resultRow(item.name, "invalid-target-path", "", "Target path could not be resolved safely."));
+    continue;
+  }
   const targetDir = path.dirname(targetVttPath);
   fs.mkdirSync(targetDir, { recursive: true });
 
@@ -112,7 +117,8 @@ console.log(
 function resolveTargetVttPath(item) {
   const copiedMp4Path = item.copiedMp4?.path ?? "";
   if (copiedMp4Path) {
-    return replacePathExtension(copiedMp4Path, ".vtt");
+    const candidate = replacePathExtension(copiedMp4Path, ".vtt");
+    return isPathInAllowedRoot(candidate) ? candidate : "";
   }
 
   const approvalDestinationId =
@@ -123,7 +129,29 @@ function resolveTargetVttPath(item) {
     approvalDestinationId || item.suggestedDestinationId || "";
   const destinationDir = destinationMap.get(fallbackDestinationId);
   if (!destinationDir) return "";
-  return path.join(destinationDir, replaceFileExtension(item.suggestedNewName, ".vtt"));
+  const fileName = getSafeLeafName(replaceFileExtension(item.suggestedNewName, ".vtt"));
+  if (!fileName) return "";
+  const candidate = path.join(destinationDir, fileName);
+  return isPathInAllowedRoot(candidate) ? candidate : "";
+}
+
+function getSafeLeafName(fileName) {
+  if (!fileName) return "";
+  const leaf = path.basename(fileName);
+  if (leaf !== fileName) return "";
+  if (leaf.includes("..")) return "";
+  return leaf;
+}
+
+function isPathInAllowedRoot(candidatePath) {
+  const resolvedCandidate = path.resolve(candidatePath);
+  for (const root of allowedDestinationRoots) {
+    const normalizedRoot = root.endsWith(path.sep) ? root : `${root}${path.sep}`;
+    if (resolvedCandidate.startsWith(normalizedRoot) || resolvedCandidate === root) {
+      return true;
+    }
+  }
+  return false;
 }
 
 async function openTranscript(page) {

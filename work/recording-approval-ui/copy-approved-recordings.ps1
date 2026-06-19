@@ -65,6 +65,45 @@ function Test-FileExistsRobust {
     return (Test-Path -LiteralPath $Path) -or [System.IO.File]::Exists((Get-LongPath -Path $Path))
 }
 
+function Get-CanonicalPath {
+    param([string]$Path)
+
+    return [System.IO.Path]::GetFullPath($Path)
+}
+
+function Test-IsPathWithinRoot {
+    param(
+        [string]$RootPath,
+        [string]$CandidatePath
+    )
+
+    $root = Get-CanonicalPath -Path $RootPath
+    $candidate = Get-CanonicalPath -Path $CandidatePath
+    if (-not $root.EndsWith([System.IO.Path]::DirectorySeparatorChar)) {
+        $root += [System.IO.Path]::DirectorySeparatorChar
+    }
+
+    return $candidate.StartsWith($root, [System.StringComparison]::OrdinalIgnoreCase)
+}
+
+function Get-SafeLeafName {
+    param([string]$Name)
+
+    if (-not $Name) {
+        throw "Filename is empty."
+    }
+
+    $leaf = [System.IO.Path]::GetFileName($Name)
+    if ($leaf -ne $Name) {
+        throw "Filename must not contain path segments."
+    }
+    if ($leaf.Contains('..')) {
+        throw "Filename must not contain traversal segments."
+    }
+
+    return $leaf
+}
+
 function Copy-FileRobust {
     param(
         [string]$SourcePath,
@@ -151,7 +190,30 @@ $results = foreach ($item in $approval.approvals) {
         }
     }
 
-    $target = Join-Path -Path $destDir -ChildPath $item.suggestedNewName
+    try {
+        $safeFileName = Get-SafeLeafName -Name $item.suggestedNewName
+    } catch {
+        [PSCustomObject]@{
+            Status = 'invalid-target-name'
+            Name = $item.name
+            Target = ''
+            Freed = $false
+            Source = $sourcePath
+        }
+        continue
+    }
+
+    $target = Join-Path -Path $destDir -ChildPath $safeFileName
+    if (-not (Test-IsPathWithinRoot -RootPath $destDir -CandidatePath $target)) {
+        [PSCustomObject]@{
+            Status = 'invalid-target-path'
+            Name = $item.name
+            Target = $target
+            Freed = $false
+            Source = $sourcePath
+        }
+        continue
+    }
     if (-not (Test-FileExistsRobust -Path $target)) {
         if (-not (Test-Path -LiteralPath $sourcePath)) {
             $status = 'missing-source'
