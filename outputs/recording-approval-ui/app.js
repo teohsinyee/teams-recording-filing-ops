@@ -72,7 +72,7 @@ function persistState() {
 }
 
 function populateDestinationFilter() {
-  for (const destination of state.data.destinations) {
+  for (const destination of sortedDestinations()) {
     const option = document.createElement("option");
     option.value = destination.id;
     option.textContent = destinationDisplayLabel(destination);
@@ -225,7 +225,7 @@ function renderTable() {
     const decision = getDecision(recording);
     const tr = document.createElement("tr");
     const status = decisionStatus(decision);
-    const destinationOptions = state.data.destinations
+    const destinationOptions = sortedDestinations()
       .map((destination) => {
         const selected = decision.destinationId === destination.id ? "selected" : "";
         return `<option value="${destination.id}" ${selected}>${escapeHtml(destinationDisplayLabel(destination))}</option>`;
@@ -535,6 +535,12 @@ function destinationLabel(destinationId) {
 
 function destinationDisplayLabel(destination) {
   return destination.uiLabel || destination.label;
+}
+
+function sortedDestinations() {
+  return [...state.data.destinations].sort((left, right) =>
+    destinationDisplayLabel(left).localeCompare(destinationDisplayLabel(right)),
+  );
 }
 
 function cssEscape(value) {
