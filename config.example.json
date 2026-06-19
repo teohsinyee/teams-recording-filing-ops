@@ -1,0 +1,21 @@
+{
+  "sourceRecordingsDir": "C:\\Users\\you\\OneDrive - Company\\Recordings",
+  "outputDataDir": ".\\outputs\\recording-approval-ui\\data",
+  "approvalsPath": ".\\outputs\\recording-approval-ui\\data\\approvals.json",
+  "playwrightProfileDir": ".\\work\\recording-approval-ui\\playwright-profile",
+  "streamBaseUrl": "https://tenant-my.sharepoint.com/personal/you_company_com/_layouts/15/stream.aspx?id=",
+  "streamPathPrefix": "/personal/you_company_com/Documents/Recordings/",
+  "routingRules": [
+    {
+      "pattern": "Team A|Project Alpha",
+      "destinationId": "team-a"
+    }
+  ],
+  "destinations": [
+    {
+      "id": "team-a",
+      "label": "Team A",
+      "path": "C:\\Users\\you\\OneDrive - Company\\Team A\\Recording and Transcript"
+    }
+  ]
+}
