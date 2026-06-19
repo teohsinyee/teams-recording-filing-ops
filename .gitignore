@@ -3,6 +3,9 @@ outputs/recording-approval-ui/data/recordings.js
 outputs/recording-approval-ui/data/recordings-*.json
 outputs/recording-approval-ui/data/approvals.json
 outputs/recording-approval-ui/data/vtt-download-results-*.json
+outputs/recording-approval-ui/data/expiration-results-*.json
+outputs/recording-approval-ui/data/tmp-expiry-*.json
+outputs/recording-approval-ui/data/*-debug.png
 outputs/recording-approval-ui/logs/
 config.local.json
 node_modules/

@@ -3,7 +3,8 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "download:missing-vtt": "node work/recording-approval-ui/download-missing-vtt.mjs"
+    "download:missing-vtt": "node work/recording-approval-ui/download-missing-vtt.mjs",
+    "ensure:no-expiration": "node work/recording-approval-ui/ensure-no-expiration.mjs"
   },
   "dependencies": {
     "playwright": "^1.54.2"
