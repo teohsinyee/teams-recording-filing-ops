@@ -179,6 +179,11 @@ That command will:
 - download missing VTT files into the matching target folder
 - refresh review data so the UI shows the latest state
 
+It also writes local run logs to:
+
+- `outputs/recording-approval-ui/logs/run-YYYYMMDD-HHmmss.log`
+- `outputs/recording-approval-ui/logs/run-YYYYMMDD-HHmmss.summary.json`
+
 ## File map
 
 | File | What it does | Python-style analogy |
