@@ -1,0 +1,10 @@
+outputs/recording-approval-ui/data/recordings.json
+outputs/recording-approval-ui/data/recordings.js
+outputs/recording-approval-ui/data/recordings-*.json
+outputs/recording-approval-ui/data/approvals.json
+outputs/recording-approval-ui/data/vtt-download-results-*.json
+outputs/recording-approval-ui/logs/
+config.local.json
+node_modules/
+work/recording-approval-ui/playwright-profile/
+*.log
