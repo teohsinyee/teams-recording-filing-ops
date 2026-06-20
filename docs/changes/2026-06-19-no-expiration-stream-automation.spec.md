@@ -33,6 +33,30 @@ This change set defines the operating rules for a local â€œensure no expirationâ
 - Only visible Stream states should drive behavior: `No expiration`, `Expires in ...`, or explicit unknown.
 - Unknown expiry state should not trigger destructive fallback actions.
 
+## Result Status Definitions
+
+- `already-safe`
+  The recording page already showed `No expiration`, so the automation made no change.
+- `removed-expiration`
+  The recording page showed `Expires in ...`, the automation clicked `Remove expiration`, and the page then settled to `No expiration`.
+- `unknown`
+  The automation could not confirm either `No expiration` or `Expires in ...` from the page, so it made no change.
+- `failed`
+  The automation attempted a change or page interaction, but the page did not end in the expected `No expiration` state, or another runtime error occurred.
+- `invalid-source-url`
+  The recording `sourceUrl` was not an allowed SharePoint Stream URL, so the browser was not allowed to open it.
+
+## Result Field Definitions
+
+- `name`
+  The original recording filename from `recordings.json`.
+- `status`
+  The final classification for that recording after the run.
+- `expiryLabel`
+  The visible expiry text detected before action, such as `No expiration` or `Expires in 12 days`.
+- `error`
+  A short failure reason. This is empty when the recording was processed successfully or already safe.
+
 ## Failure Handling
 
 - If the recording URL is not an allowed Stream URL, return `invalid-source-url`.
