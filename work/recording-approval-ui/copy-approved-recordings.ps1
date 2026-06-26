@@ -156,8 +156,15 @@ function Copy-FileRobust {
         return $false
     }
 }
+$destinations = @()
+if ($approval.PSObject.Properties.Name -contains 'destinations' -and $approval.destinations) {
+    $destinations = @($approval.destinations)
+} else {
+    $destinations = @($config.destinations)
+}
+
 $destMap = @{}
-foreach ($destination in $approval.destinations) {
+foreach ($destination in $destinations) {
     $destMap[$destination.id] = $destination.path
 }
 
@@ -174,8 +181,9 @@ $results = foreach ($item in $approval.approvals) {
         New-Item -ItemType Directory -Force -Path $destDir | Out-Null
     }
 
-    $sourcePath = $item.sourcePath
-    if (-not (Test-Path -LiteralPath $sourcePath)) {
+    $sourcePath = [string]$item.sourcePath
+    $sourceExists = $sourcePath -and (Test-Path -LiteralPath $sourcePath)
+    if (-not $sourceExists) {
         $recording = $recordingMap[$item.name]
         if (-not $recording) {
             $recording = Find-RecordingByApproval -ApprovalItem $item -RecordingsData $recordingsData

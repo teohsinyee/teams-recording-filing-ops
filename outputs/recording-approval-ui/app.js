@@ -381,6 +381,8 @@ async function connectApprovalFile() {
 function buildApprovalPayload() {
   return {
     savedAt: new Date().toISOString(),
+    sourceDir: state.data.sourceDir || "",
+    destinations: state.data.destinations || [],
     approvals: state.data.recordings.map((recording) => {
       const decision = getDecision(recording);
       return {

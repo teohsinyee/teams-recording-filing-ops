@@ -97,10 +97,35 @@ function Get-MediaDurationSeconds {
 
 function Find-MatchedMp4Copy {
     param(
+        [string]$BaseName,
+        [string]$SuggestedNewName,
         [string]$DateToken,
         [int]$DurationSeconds,
         [object[]]$Destinations
     )
+
+    $originalTargetName = $BaseName
+    $suggestedTargetName = $SuggestedNewName
+
+    foreach ($destination in $Destinations) {
+        $originalTarget = Join-Path -Path $destination.path -ChildPath $originalTargetName
+        if (Test-Path -LiteralPath $originalTarget) {
+            return [PSCustomObject]@{
+                destinationId = $destination.id
+                path = $originalTarget
+                name = $originalTargetName
+            }
+        }
+
+        $suggestedTarget = Join-Path -Path $destination.path -ChildPath $suggestedTargetName
+        if (Test-Path -LiteralPath $suggestedTarget) {
+            return [PSCustomObject]@{
+                destinationId = $destination.id
+                path = $suggestedTarget
+                name = $suggestedTargetName
+            }
+        }
+    }
 
     if (-not $DateToken -or $null -eq $DurationSeconds) { return $null }
 
@@ -175,6 +200,25 @@ function FindVttInDestination {
     return $null
 }
 
+function FindMp4BySuggestedNameFromVttMatch {
+    param(
+        [string]$SuggestedNewName,
+        [object]$VttMatch
+    )
+
+    if (-not $VttMatch -or -not $VttMatch.path) { return $null }
+
+    $targetDir = Split-Path -Path $VttMatch.path -Parent
+    $targetPath = Join-Path -Path $targetDir -ChildPath $SuggestedNewName
+    if (-not (Test-Path -LiteralPath $targetPath)) { return $null }
+
+    return [PSCustomObject]@{
+        destinationId = $VttMatch.destinationId
+        path = $targetPath
+        name = $SuggestedNewName
+    }
+}
+
 $records = Get-ChildItem -LiteralPath $SourceDir -File |
     Sort-Object Name |
     ForEach-Object {
@@ -183,8 +227,11 @@ $records = Get-ChildItem -LiteralPath $SourceDir -File |
         $prefix = Get-DatePrefix -Name $_.Name
         $dateToken = Get-DateToken -Name $_.Name
         $suggestedNewName = if ($prefix) { '{0}_{1}' -f $prefix, $_.Name } else { $_.Name }
-        $mp4CopyMatch = Find-MatchedMp4Copy -DateToken $dateToken -DurationSeconds $durationSeconds -Destinations $destinations
         $vttMatch = FindVttInDestination -BaseName $_.Name -SuggestedNewName $suggestedNewName -Destinations $destinations
+        $mp4CopyMatch = FindMp4BySuggestedNameFromVttMatch -SuggestedNewName $suggestedNewName -VttMatch $vttMatch
+        if (-not $mp4CopyMatch) {
+            $mp4CopyMatch = Find-MatchedMp4Copy -BaseName $_.Name -SuggestedNewName $suggestedNewName -DateToken $dateToken -DurationSeconds $durationSeconds -Destinations $destinations
+        }
         [PSCustomObject]@{
             name = $_.Name
             sourcePath = $_.FullName
